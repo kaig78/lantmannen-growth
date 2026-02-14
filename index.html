@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lantmannen Unibake — Finding New Growth</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #1d1d1f;
+            --gray-dark: #424245;
+            --gray-mid: #6e6e73;
+            --gray-light: #86868b;
+            --gray-bg: #f5f5f7;
+            --white: #ffffff;
+            --accent: #0071e3;
+            --accent-light: #2997ff;
+            --green: #30d158;
+            --orange: #ff9f0a;
+            --red: #ff453a;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            color: var(--black);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .deck {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 120px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            transform: translateX(40px);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .slide.exit-left {
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+
+        .slide-label {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            color: var(--black);
+            max-width: 900px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            color: var(--black);
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h3 {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            color: var(--black);
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            font-weight: 300;
+            line-height: 1.4;
+            color: var(--gray-mid);
+            max-width: 700px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--gray-dark);
+        }
+
+        .content-left {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .content-left h2 {
+            text-align: left;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 36px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .grid-5 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .card {
+            background: var(--gray-bg);
+            border-radius: 20px;
+            padding: 36px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card p {
+            font-size: 16px;
+            color: var(--gray-mid);
+            margin-top: 8px;
+        }
+
+        .card-accent {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .card-accent h3 {
+            color: var(--white);
+        }
+
+        .card-accent p {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .card-sm {
+            padding: 28px;
+        }
+
+        .card-sm h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .card-sm p {
+            font-size: 14px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .stat-number {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-unit {
+            font-size: 20px;
+            font-weight: 300;
+            color: var(--gray-mid);
+            margin-top: 8px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            font-size: 18px;
+            line-height: 1.5;
+            color: var(--gray-dark);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list .bullet {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: rgba(0,113,227,0.1);
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .tag-green {
+            background: rgba(48,209,88,0.12);
+            color: #248a3d;
+        }
+
+        .tag-orange {
+            background: rgba(255,159,10,0.12);
+            color: #c77c00;
+        }
+
+        .tag-red {
+            background: rgba(255,69,58,0.1);
+            color: #d70015;
+        }
+
+        .slide-dark {
+            background: var(--black);
+        }
+
+        .slide-dark h1,
+        .slide-dark h2 {
+            color: var(--white);
+        }
+
+        .slide-dark .subtitle {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .slide-dark .slide-label {
+            color: var(--accent-light);
+        }
+
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            transition: width 0.4s ease;
+            z-index: 100;
+        }
+
+        .nav-hint {
+            position: fixed;
+            bottom: 32px;
+            right: 40px;
+            font-size: 13px;
+            color: var(--gray-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .nav-hint kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: 1px solid rgba(0,0,0,0.15);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--white);
+        }
+
+        .nav-hint.on-dark kbd {
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 32px;
+            left: 40px;
+            font-size: 13px;
+            color: var(--gray-light);
+            z-index: 100;
+        }
+
+        .roadmap {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .roadmap-phase {
+            display: flex;
+            align-items: flex-start;
+            gap: 32px;
+            padding: 28px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .roadmap-phase:last-child {
+            border-bottom: none;
+        }
+
+        .roadmap-time {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent);
+            min-width: 120px;
+            padding-top: 2px;
+        }
+
+        .roadmap-content h3 {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .roadmap-content p {
+            font-size: 16px;
+            color: var(--gray-mid);
+        }
+
+        .bar-chart {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .bar-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-dark);
+            min-width: 140px;
+            text-align: right;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 32px;
+            background: var(--gray-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--white);
+            transition: width 1s ease;
+        }
+
+        .bar-fill.green { background: var(--green); }
+        .bar-fill.orange { background: var(--orange); }
+
+        /* Competitor table */
+        .comp-table {
+            width: 100%;
+            max-width: 1100px;
+            border-collapse: collapse;
+        }
+
+        .comp-table th {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--gray-light);
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 2px solid rgba(0,0,0,0.08);
+        }
+
+        .comp-table td {
+            font-size: 15px;
+            color: var(--gray-dark);
+            padding: 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            vertical-align: top;
+        }
+
+        .comp-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comp-table .company-name {
+            font-weight: 600;
+            color: var(--black);
+        }
+
+        .comp-highlight {
+            background: rgba(0,113,227,0.04);
+        }
+
+        .comp-highlight .company-name {
+            color: var(--accent);
+        }
+
+        [contenteditable]:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 32px; }
+            h1 { font-size: 40px; }
+            h2 { font-size: 32px; }
+            .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; }
+            .stat-number { font-size: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="slide-counter" id="counter"></div>
+<div class="nav-hint" id="navHint">
+    <kbd>&larr;</kbd><kbd>&rarr;</kbd> navigate
+</div>
+
+<div class="deck" id="deck">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide slide-dark active" data-dark="true">
+        <span class="slide-label">Strategic Analysis 2026</span>
+        <h1 contenteditable="true">Finding New Growth</h1>
+        <p class="subtitle" contenteditable="true">How Lantmannen Unibake can shape its next phase of growth</p>
+    </div>
+
+    <!-- SLIDE 2: Agenda -->
+    <div class="slide">
+        <span class="slide-label">Agenda</span>
+        <h2 contenteditable="true">Our Roadmap</h2>
+        <div class="grid-3">
+            <div class="card">
+                <span class="tag">01</span>
+                <h3 contenteditable="true">Status Quo</h3>
+                <p contenteditable="true">Where we stand today — key figures, brands, markets</p>
+            </div>
+            <div class="card">
+                <span class="tag">02</span>
+                <h3 contenteditable="true">Market & Trends</h3>
+                <p contenteditable="true">What's driving the European bakery market</p>
+            </div>
+            <div class="card">
+                <span class="tag">03</span>
+                <h3 contenteditable="true">Bake-Off Deep Dive</h3>
+                <p contenteditable="true">The fastest-growing segment — and what competitors are doing</p>
+            </div>
+            <div class="card">
+                <span class="tag">04</span>
+                <h3 contenteditable="true">Growth Levers</h3>
+                <p contenteditable="true">Five strategic growth areas</p>
+            </div>
+            <div class="card">
+                <span class="tag">05</span>
+                <h3 contenteditable="true">Strategy & Roadmap</h3>
+                <p contenteditable="true">Concrete recommendations and phased plan</p>
+            </div>
+            <div class="card card-accent">
+                <span class="tag" style="background:rgba(255,255,255,0.15);color:var(--accent-light)">Goal</span>
+                <h3 contenteditable="true">Sustainable Growth</h3>
+                <p contenteditable="true">From EUR 1.2B to the next level</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: Company at a glance -->
+    <div class="slide">
+        <span class="slide-label">Lantmannen Unibake Today</span>
+        <h2 contenteditable="true">A Global Market Leader</h2>
+        <div class="grid-4">
+            <div class="stat">
+                <div class="stat-number" contenteditable="true">1.2B</div>
+                <div class="stat-unit" contenteditable="true">EUR Annual Revenue</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" contenteditable="true">6,000+</div>
+                <div class="stat-unit" contenteditable="true">Employees Worldwide</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" contenteditable="true">36</div>
+                <div class="stat-unit" contenteditable="true">Bakeries in 21 Countries</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" contenteditable="true">60+</div>
+                <div class="stat-unit" contenteditable="true">Markets Worldwide</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: Brands & Portfolio -->
+    <div class="slide content-left">
+        <span class="slide-label">Brand Portfolio</span>
+        <h2 contenteditable="true">13 Strong Brands</h2>
+        <div class="grid-2">
+            <div>
+                <ul class="feature-list">
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Schulstad</strong> — Premium rolls & croissants (Nordics)</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Hatting</strong> — Burger & hot dog buns (Nordics)</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Vaasan</strong> — Bread & bakery (Finland/Baltics)</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Schulstad Bakery Solutions</strong> — B2B foodservice</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Pastridor</strong> — Premium viennoiserie (Europe)</span></li>
+                </ul>
+            </div>
+            <div>
+                <ul class="feature-list">
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Bonjour</strong> — Fresh bakery (Finland)</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Myllyn Paras</strong> — Flour & baking ingredients</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Korvbrodsbagarn</strong> — Sausage buns (Sweden)</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Euro-Bake</strong> — Artisan bread (USA)</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Boboli</strong> — Mediterranean flatbreads (new 2025)</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: Recent Moves -->
+    <div class="slide">
+        <span class="slide-label">Recent Developments</span>
+        <h2 contenteditable="true">Strategic Moves in 2025</h2>
+        <div class="grid-3">
+            <div class="card">
+                <span class="tag">Acquisition</span>
+                <h3 contenteditable="true">Boboli Benelux</h3>
+                <p contenteditable="true">Savoury segment: focaccia, pizza, Mediterranean flatbreads. EUR 50M revenue, 200 employees, first bakery in the Netherlands.</p>
+            </div>
+            <div class="card">
+                <span class="tag">Acquisition</span>
+                <h3 contenteditable="true">Panificio San Francesco</h3>
+                <p contenteditable="true">Italian par-baked & frozen bread specialist. Baguette, ciabatta, sandwich. Expanding private label bake-off.</p>
+            </div>
+            <div class="card">
+                <span class="tag-green tag">Investment</span>
+                <h3 contenteditable="true">Orebro, Sweden</h3>
+                <p contenteditable="true">SEK 700M (~EUR 62M) in new bread production facility. A strategic leap in capacity.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: Market Size -->
+    <div class="slide slide-dark" data-dark="true">
+        <span class="slide-label">Market Overview</span>
+        <h2 contenteditable="true" style="color:var(--white)">The Market Is Growing — and Changing</h2>
+        <div class="grid-3">
+            <div class="stat">
+                <div class="stat-number" contenteditable="true">$92B</div>
+                <div class="stat-unit" style="color:rgba(255,255,255,0.5)" contenteditable="true">EU Bakery Market by 2033</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" contenteditable="true">5.0%</div>
+                <div class="stat-unit" style="color:rgba(255,255,255,0.5)" contenteditable="true">CAGR Frozen Bakery Global</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" contenteditable="true">5.3%</div>
+                <div class="stat-unit" style="color:rgba(255,255,255,0.5)" contenteditable="true">CAGR Bake-Off Segment</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: Trends -->
+    <div class="slide content-left">
+        <span class="slide-label">Megatrends 2026</span>
+        <h2 contenteditable="true">What's Driving the Market</h2>
+        <div class="grid-2">
+            <div class="card">
+                <span class="tag">Health</span>
+                <h3 contenteditable="true">Protein & Fiber</h3>
+                <p contenteditable="true">+29% launches with protein claims. 1 in 5 consumers see bakery as a protein source. High-protein bakery: USD 6.69B by 2030.</p>
+            </div>
+            <div class="card">
+                <span class="tag-orange tag">Convenience</span>
+                <h3 contenteditable="true">On-the-Go & Bake-Off</h3>
+                <p contenteditable="true">European bake-off market booming. Smaller formats, meal-replacement bites, quick preparation for retail. By 2026, bake-off becomes the #1 supply method.</p>
+            </div>
+            <div class="card">
+                <span class="tag-green tag">Sustainability</span>
+                <h3 contenteditable="true">Clean Label & Planet</h3>
+                <p contenteditable="true">21% of new launches carry plant-based claims. EU packaging regulation: all packaging recyclable by 2030. Natural colors and ingredients.</p>
+            </div>
+            <div class="card">
+                <span class="tag">Premium</span>
+                <h3 contenteditable="true">Premiumization</h3>
+                <p contenteditable="true">Artisan quality, viennoiserie in hotels & cafes, visual wow factors, texture as a purchase driver.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: Bake-Off Deep Dive Title -->
+    <div class="slide slide-dark" data-dark="true">
+        <span class="slide-label">Deep Dive</span>
+        <h1 contenteditable="true" style="font-size:56px">The Bake-Off<br>Opportunity</h1>
+        <p class="subtitle" contenteditable="true">By 2026, bake-off will become the #1 supply method<br>for bakery products in Europe — overtaking packaged ambient</p>
+    </div>
+
+    <!-- SLIDE 9: Bake-Off Market Data -->
+    <div class="slide content-left">
+        <span class="slide-label">Bake-Off Market</span>
+        <h2 contenteditable="true">A $13.6B Opportunity by 2035</h2>
+        <div class="grid-2">
+            <div>
+                <ul class="feature-list">
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Market size:</strong> USD 9.42B (2026) growing to USD 13.64B (2035) at 5.3% CAGR</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Europe leads:</strong> Largest share globally due to deep bakery traditions and high per capita consumption</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Ready-to-proof:</strong> Fastest sub-segment at 5.48% CAGR, driven by low-temperature fermentation advances</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Key channels:</strong> In-store bakeries, HoReCa, convenience stores, gas stations, quick-service restaurants</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Structural shift:</strong> Retailers replacing scratch bakeries with bake-off solutions — lower cost, consistent quality, less waste</span></li>
+                </ul>
+            </div>
+            <div>
+                <div class="bar-chart">
+                    <div class="bar-row">
+                        <span class="bar-label">Ready-to-Proof</span>
+                        <div class="bar-track">
+                            <div class="bar-fill green" style="width:73%">5.48%</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Bake-Off Total</span>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width:66%">5.3%</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Frozen Bakery</span>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width:63%">5.0%</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">EU Bakery Total</span>
+                        <div class="bar-track">
+                            <div class="bar-fill orange" style="width:40%">3.2%</div>
+                        </div>
+                    </div>
+                    <p style="font-size:13px;color:var(--gray-light);margin-top:12px" contenteditable="true">CAGR by segment — bake-off outpaces the overall market</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: Bake-Off Channels -->
+    <div class="slide content-left">
+        <span class="slide-label">Bake-Off Channels</span>
+        <h2 contenteditable="true">Where Bake-Off Is Growing Fastest</h2>
+        <div class="grid-2">
+            <div class="card">
+                <span class="tag-orange tag">High Growth</span>
+                <h3 contenteditable="true">Gas Stations & C-Stores</h3>
+                <p contenteditable="true">The convenience store segment is expanding at the highest CAGR. Urban consumers want fresh bakery on-the-go. Gas station chains across Europe are adding bake-off ovens — converting from packaged snacks to freshly baked products with higher margins.</p>
+            </div>
+            <div class="card">
+                <span class="tag">Core Channel</span>
+                <h3 contenteditable="true">In-Store Bakeries (Retail)</h3>
+                <p contenteditable="true">Supermarkets are systematically replacing scratch bakeries with bake-off. Lower labor cost, zero waste from unsold dough, consistent quality. Lidl, Aldi, Carrefour are all scaling bake-off programs aggressively.</p>
+            </div>
+            <div class="card">
+                <span class="tag">Expanding</span>
+                <h3 contenteditable="true">HoReCa & QSR</h3>
+                <p contenteditable="true">Hotels, restaurants, cafes, and quick-service chains need consistent, premium-looking bakery without a baker on staff. Bake-off viennoiserie and artisan bread are the sweet spot.</p>
+            </div>
+            <div class="card">
+                <span class="tag-green tag">Emerging</span>
+                <h3 contenteditable="true">E-Commerce & Dark Kitchens</h3>
+                <p contenteditable="true">Online grocery platforms and delivery kitchens are new outlets. Frozen bake-off products ship and store perfectly — ideal for the last-mile bakery experience at home.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: Competitor Landscape -->
+    <div class="slide content-left">
+        <span class="slide-label">Competitive Landscape</span>
+        <h2 contenteditable="true">What Competitors Are Doing</h2>
+        <table class="comp-table">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Revenue</th>
+                    <th>Bake-Off Strategy</th>
+                    <th>Recent Moves</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="comp-highlight">
+                    <td class="company-name" contenteditable="true">Lantmannen Unibake</td>
+                    <td contenteditable="true">EUR 1.2B</td>
+                    <td contenteditable="true">Strong in frozen & par-baked for retail & foodservice. Schulstad Bakery Solutions as B2B platform.</td>
+                    <td contenteditable="true">Boboli (savoury), Panificio (Italian bake-off), Orebro plant investment</td>
+                </tr>
+                <tr>
+                    <td class="company-name" contenteditable="true">Aryzta</td>
+                    <td contenteditable="true">EUR 1.8B</td>
+                    <td contenteditable="true">Largest pure-play frozen bake-off company. Strong in convenience & QSR channels. Repositioned for profitable growth under new leadership.</td>
+                    <td contenteditable="true">New production lines in Germany, Malaysia, Switzerland. Ramping up for 2026 organic growth.</td>
+                </tr>
+                <tr>
+                    <td class="company-name" contenteditable="true">Europastry</td>
+                    <td contenteditable="true">EUR 1.5B</td>
+                    <td contenteditable="true">Spanish leader, strong in viennoiserie & premium bake-off. IPO in 2024, EUR 210M allocated for brand development.</td>
+                    <td contenteditable="true">Acquired Art of Baking (Thailand) for Asia-Pacific entry. Expanding premium frozen pastry globally.</td>
+                </tr>
+                <tr>
+                    <td class="company-name" contenteditable="true">Vandemoortele</td>
+                    <td contenteditable="true">EUR 1.7B</td>
+                    <td contenteditable="true">Belgian leader in frozen bakery & margarines. Strong in European retail bake-off and private label.</td>
+                    <td contenteditable="true">Acquiring Delifrance (June 2025). Lizzi (Italy) and Banneton (North America) for geographic reach.</td>
+                </tr>
+                <tr>
+                    <td class="company-name" contenteditable="true">Grupo Bimbo</td>
+                    <td contenteditable="true">USD 20B+</td>
+                    <td contenteditable="true">World's largest bakery company. Scale advantage in Americas, expanding frozen in Europe & Asia.</td>
+                    <td contenteditable="true">Continued acquisitions globally. Leveraging massive distribution network.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SLIDE 12: Competitor Insights -->
+    <div class="slide content-left">
+        <span class="slide-label">Key Takeaways</span>
+        <h2 contenteditable="true">What We Can Learn from Competitors</h2>
+        <div class="grid-2">
+            <div class="card">
+                <span class="tag-red tag">Threat</span>
+                <h3 contenteditable="true">Vandemoortele + Delifrance</h3>
+                <p contenteditable="true">This mega-merger creates a European bake-off powerhouse. Combined, they will have massive scale in frozen viennoiserie and private label bake-off — directly competing with Unibake's core business.</p>
+            </div>
+            <div class="card">
+                <span class="tag-orange tag">Lesson</span>
+                <h3 contenteditable="true">Europastry's Premium Play</h3>
+                <p contenteditable="true">Europastry proves that premium positioning works in bake-off. Their IPO success (EUR 210M for growth) shows investor confidence in high-end frozen bakery. Unibake should double down on Pastridor.</p>
+            </div>
+            <div class="card">
+                <span class="tag">Lesson</span>
+                <h3 contenteditable="true">Aryzta's C-Store Focus</h3>
+                <p contenteditable="true">Aryzta has built strong partnerships with convenience and QSR chains. This is a channel Unibake should aggressively enter — gas stations and convenience stores are underpenetrated for bake-off.</p>
+            </div>
+            <div class="card card-accent">
+                <span class="tag" style="background:rgba(255,255,255,0.15);color:var(--accent-light)">Unibake Advantage</span>
+                <h3 contenteditable="true">Farmer-Owned Sustainability Story</h3>
+                <p contenteditable="true">No competitor can match Lantmannen's field-to-shelf authenticity. As retailers demand sustainable suppliers, this is an increasingly powerful differentiator in bake-off tenders.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 13: Growth Levers Title -->
+    <div class="slide slide-dark" data-dark="true">
+        <span class="slide-label">Growth Strategy</span>
+        <h1 contenteditable="true" style="font-size:56px">Five Levers<br>for New Growth</h1>
+        <p class="subtitle" contenteditable="true">From product innovation to geographic expansion</p>
+    </div>
+
+    <!-- SLIDE 14: Lever 1 -->
+    <div class="slide content-left">
+        <span class="slide-label">Lever 1</span>
+        <h2 contenteditable="true">Expand Savoury & Mediterranean</h2>
+        <div class="grid-2">
+            <div>
+                <ul class="feature-list">
+                    <li><span class="bullet"></span><span contenteditable="true">Pizza crusts growing at 6.3% CAGR — strongest sub-segment</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Boboli acquisition as platform for pan-European savoury rollout</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Focaccia, flatbreads, savoury snacks for foodservice & retail</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Cross-sell through existing customer relationships in 60+ markets</span></li>
+                </ul>
+            </div>
+            <div class="card card-accent">
+                <span class="tag" style="background:rgba(255,255,255,0.15);color:var(--accent-light)">Potential</span>
+                <h3 contenteditable="true">EUR 200-300M additional revenue by 2030</h3>
+                <p contenteditable="true">Through Boboli expansion, Panificio integration, and new savoury product lines across all markets.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 15: Lever 2 -->
+    <div class="slide content-left">
+        <span class="slide-label">Lever 2</span>
+        <h2 contenteditable="true">Win the Bake-Off Race</h2>
+        <div class="grid-2">
+            <div>
+                <ul class="feature-list">
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>C-Store offensive:</strong> Build dedicated bake-off programs for gas station and convenience chains (like Aryzta does)</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Portion innovation:</strong> Mini-formats, snack bites, grab-and-go solutions for on-the-move consumers</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Turnkey solutions:</strong> Oven + product + planogram packages for non-bakery retailers entering bake-off</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Digital ordering:</strong> Build a B2B platform for smaller customers to order, track, and restock automatically</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true"><strong>Premium bake-off:</strong> Leverage Pastridor for high-end viennoiserie in hotels and specialty cafes</span></li>
+                </ul>
+            </div>
+            <div class="card card-accent">
+                <span class="tag" style="background:rgba(255,255,255,0.15);color:var(--accent-light)">Market Shift</span>
+                <h3 contenteditable="true">Bake-off becomes #1 supply method in 2026</h3>
+                <p contenteditable="true">This is a once-in-a-generation structural shift. Every retailer, gas station, and food outlet is a potential bake-off customer. Unibake's frozen expertise is perfectly positioned — but speed matters.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 16: Lever 3 -->
+    <div class="slide content-left">
+        <span class="slide-label">Lever 3</span>
+        <h2 contenteditable="true">Healthy & Functional Bakery</h2>
+        <div class="grid-2">
+            <div>
+                <ul class="feature-list">
+                    <li><span class="bullet"></span><span contenteditable="true">Develop protein-enriched breads, rolls, and snacks</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">High-fiber formulations for institutional clients (schools, hospitals)</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Launch plant-based product lines under existing brands</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Clean-label positioning: less sugar, salt, natural ingredients</span></li>
+                </ul>
+            </div>
+            <div class="card card-accent">
+                <span class="tag" style="background:rgba(255,255,255,0.15);color:var(--accent-light)">Opportunity</span>
+                <h3 contenteditable="true">USD 6.69B high-protein bakery market by 2030</h3>
+                <p contenteditable="true">Lantmannen's farmer-owned heritage and sustainability DNA are the ideal foundation for credibility in this segment.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 17: Lever 4 -->
+    <div class="slide content-left">
+        <span class="slide-label">Lever 4</span>
+        <h2 contenteditable="true">Geographic Expansion</h2>
+        <div class="grid-2">
+            <div>
+                <ul class="feature-list">
+                    <li><span class="bullet"></span><span contenteditable="true">Southern Europe: Italy (Panificio) and Spain as growth markets</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Asia-Pacific: Frozen bakery market USD 7.67B by 2030, CAGR 7.7%</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">USA: Expand Euro-Bake as platform for broader artisan portfolio</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Eastern Europe: Scale existing presence in Poland, Hungary, Baltics</span></li>
+                </ul>
+            </div>
+            <div>
+                <div class="bar-chart">
+                    <div class="bar-row">
+                        <span class="bar-label">Asia-Pacific</span>
+                        <div class="bar-track">
+                            <div class="bar-fill green" style="width:77%">7.7%</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Pizza Crusts</span>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width:63%">6.3%</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Bake-Off</span>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width:53%">5.3%</div>
+                        </div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">EU Bakery Total</span>
+                        <div class="bar-track">
+                            <div class="bar-fill orange" style="width:32%">3.2%</div>
+                        </div>
+                    </div>
+                    <p style="font-size:13px;color:var(--gray-light);margin-top:12px" contenteditable="true">CAGR by segment / region</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 18: Lever 5 -->
+    <div class="slide content-left">
+        <span class="slide-label">Lever 5</span>
+        <h2 contenteditable="true">Sustainability as Competitive Advantage</h2>
+        <div class="grid-2">
+            <div>
+                <ul class="feature-list">
+                    <li><span class="bullet"></span><span contenteditable="true">"Climate & Nature" program as a differentiator in B2B and B2C markets</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Farmer-owned story: field to shelf — no competitor has this authenticity</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Proactively implement EU packaging regulation — be a leader, not a follower</span></li>
+                    <li><span class="bullet"></span><span contenteditable="true">Upcycled ingredients and zero-waste production as innovation drivers</span></li>
+                </ul>
+            </div>
+            <div class="card" style="background:#f0faf0">
+                <span class="tag-green tag">USP</span>
+                <h3 contenteditable="true">17,000 Farmers as Our Backbone</h3>
+                <p contenteditable="true">No other global bakery group can credibly tell a direct field-to-product story. This is Lantmannen's strongest differentiator — and it matters more every year as retailers screen suppliers on ESG.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 19: Strategic Recommendations -->
+    <div class="slide">
+        <span class="slide-label">Recommendations</span>
+        <h2 contenteditable="true">Strategic Priorities</h2>
+        <div class="grid-2">
+            <div class="card card-accent">
+                <span class="tag" style="background:rgba(255,255,255,0.15);color:var(--accent-light)">Short-Term</span>
+                <h3 contenteditable="true">Quick Wins (0-12 months)</h3>
+                <p contenteditable="true">Roll out Boboli savoury portfolio across all EU markets. Launch protein line under Schulstad. Build bake-off pilot program for 3 gas station chains. Develop turnkey C-store bake-off package.</p>
+            </div>
+            <div class="card card-accent">
+                <span class="tag" style="background:rgba(255,255,255,0.15);color:var(--accent-light)">Medium-Term</span>
+                <h3 contenteditable="true">Build (1-3 years)</h3>
+                <p contenteditable="true">Complete Panificio integration. Evaluate Asia-Pacific market entry. Establish "Climate & Nature" as consumer-facing brand. Build digital B2B ordering platform. Scale C-store partnerships.</p>
+            </div>
+            <div class="card">
+                <span class="tag">Long-Term</span>
+                <h3 contenteditable="true">Vision (3-5 years)</h3>
+                <p contenteditable="true">EUR 2B revenue target. Leading position in European healthy bakery segment. Climate-neutral production across all plants. 50+ bakeries worldwide.</p>
+            </div>
+            <div class="card">
+                <span class="tag">Enablers</span>
+                <h3 contenteditable="true">Prerequisites</h3>
+                <p contenteditable="true">Keep M&A pipeline active. Increase innovation budget. Build talent in product development & digital. Continue strengthening "One Unibake" culture.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 20: Roadmap -->
+    <div class="slide content-left">
+        <span class="slide-label">Execution</span>
+        <h2 contenteditable="true">Implementation Roadmap</h2>
+        <div class="roadmap">
+            <div class="roadmap-phase">
+                <span class="roadmap-time" contenteditable="true">Q1-Q2 2026</span>
+                <div class="roadmap-content">
+                    <h3 contenteditable="true">Foundation</h3>
+                    <p contenteditable="true">Launch savoury rollout, commission protein product development, Asia-Pacific market analysis, Panificio closing, C-store bake-off pilot design</p>
+                </div>
+            </div>
+            <div class="roadmap-phase">
+                <span class="roadmap-time" contenteditable="true">Q3-Q4 2026</span>
+                <div class="roadmap-content">
+                    <h3 contenteditable="true">Launch & Learn</h3>
+                    <p contenteditable="true">First protein range in market, convenience pilot with 3 gas station chains, Orebro plant operational, digital B2B platform MVP</p>
+                </div>
+            </div>
+            <div class="roadmap-phase">
+                <span class="roadmap-time" contenteditable="true">2027</span>
+                <div class="roadmap-content">
+                    <h3 contenteditable="true">Scale</h3>
+                    <p contenteditable="true">Savoury in 15+ markets, healthy bakery established as own category, Asia-Pacific pilot, Climate brand launch, C-store program in 5+ countries</p>
+                </div>
+            </div>
+            <div class="roadmap-phase">
+                <span class="roadmap-time" contenteditable="true">2028-2030</span>
+                <div class="roadmap-content">
+                    <h3 contenteditable="true">Lead</h3>
+                    <p contenteditable="true">EUR 2B revenue, #1 in European healthy bakery, fully sustainable supply chain, 50+ bakeries worldwide, dominant bake-off market share</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 21: Summary -->
+    <div class="slide slide-dark" data-dark="true">
+        <span class="slide-label">Summary</span>
+        <h1 contenteditable="true" style="font-size:48px">From EUR 1.2B<br>to EUR 2B</h1>
+        <p class="subtitle" contenteditable="true">Expand savoury. Win bake-off. Innovate healthy.<br>Grow geographically. Live sustainability as a brand.</p>
+    </div>
+
+    <!-- SLIDE 22: Thank you -->
+    <div class="slide slide-dark" data-dark="true">
+        <h1 contenteditable="true" style="font-size:56px">Thank You.</h1>
+        <p class="subtitle" contenteditable="true">Questions & Discussion</p>
+    </div>
+
+</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const progress = document.getElementById('progress');
+    const counter = document.getElementById('counter');
+    const navHint = document.getElementById('navHint');
+    let current = 0;
+
+    function updateSlide(next) {
+        if (next < 0 || next >= slides.length) return;
+        slides[current].classList.remove('active');
+        slides[current].classList.add('exit-left');
+        setTimeout(() => slides[current].classList.remove('exit-left'), 600);
+
+        current = next;
+        slides[current].classList.add('active');
+
+        const pct = ((current + 1) / slides.length) * 100;
+        progress.style.width = pct + '%';
+        counter.textContent = (current + 1) + ' / ' + slides.length;
+
+        const isDark = slides[current].hasAttribute('data-dark');
+        navHint.classList.toggle('on-dark', isDark);
+        counter.style.color = isDark ? 'rgba(255,255,255,0.4)' : '';
+        navHint.style.color = isDark ? 'rgba(255,255,255,0.4)' : '';
+        progress.style.background = isDark ? 'var(--accent-light)' : 'var(--accent)';
+    }
+
+    updateSlide(0);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.target.isContentEditable) return;
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            e.preventDefault();
+            updateSlide(current + 1);
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            updateSlide(current - 1);
+        } else if (e.key === 'Home') {
+            e.preventDefault();
+            updateSlide(0);
+        } else if (e.key === 'End') {
+            e.preventDefault();
+            updateSlide(slides.length - 1);
+        }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+    });
+    document.addEventListener('touchend', (e) => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) {
+            diff > 0 ? updateSlide(current + 1) : updateSlide(current - 1);
+        }
+    });
+</script>
+
+</body>
+</html>
